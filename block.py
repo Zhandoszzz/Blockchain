@@ -3,6 +3,26 @@ import json
 import os
 
 
+class MerkleTree:
+    def __init__(self, transactions):
+        self.transactions = transactions
+        self.tree = self.build_tree()
+
+    def build_tree(self):
+        if len(self.transactions) % 2 != 0:
+            self.transactions.append(self.transactions[-1])
+
+        tree = [hashlib.sha256((t1 + t2).encode()).hexdigest()
+                for t1, t2 in zip(self.transactions[::2], self.transactions[1::2])]
+
+        if len(tree) > 1:
+            return self.build_tree()
+        return tree
+
+    def get_root(self):
+        return self.tree[0]
+
+
 def get_hash(filename):
     path = os.curdir + '/blockchain/'
     file = open(path + filename, 'rb').read()
@@ -40,7 +60,6 @@ def write_block(sender, receiver, amount, prev_hash=''):
 
 def main():
     write_block('A', 'B', 10, '')
-
 
 
 if __name__ == "__main__":
