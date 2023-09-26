@@ -42,7 +42,6 @@ def main():
     write_block('A', 'B', 10, '')
 
 
-
 if __name__ == "__main__":
     main()
     validate()
