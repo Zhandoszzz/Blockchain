@@ -26,7 +26,7 @@ class MerkleTree:
 def get_hash(filename):
     path = os.curdir + '/blockchain/'
     file = open(path + filename, 'rb').read()
-    return hashlib.md5(file).hexdigest()
+    return hashlib.sha256(file).hexdigest()
 
 
 def validate():
@@ -46,7 +46,7 @@ def write_block(sender, receiver, amount, prev_hash=''):
     last_filename = os.listdir(path)[-1] if len(os.listdir(path)) > 0 else '0'
 
     filename = int(last_filename) + 1
-    if filename == '1':
+    if filename > 1:
         prev_hash = get_hash(last_filename)
     info = {
         'sender': sender,
@@ -56,10 +56,27 @@ def write_block(sender, receiver, amount, prev_hash=''):
     }
     with open(path + str(filename), 'w') as file:
         file.write(json.dumps(info))
+    print(f'Block {filename} created')
 
 
 def main():
-    write_block('A', 'B', 10, '')
+    print('!writeblock - adds block')
+    print('!validate - to check integrity')
+    while True:
+        commands = input()
+        try:
+            if commands[0] == '!':
+                commands = commands[1:].split()
+                for x in commands:
+                    if x == 'writeblock':
+                        sender = input('Sender:')
+                        receiver = input('Receiver:')
+                        amount = input('Amount:')
+                        write_block(sender, receiver, amount)
+                    elif x == 'validate':
+                        validate()
+        except Exception as e:
+            print(e)
 
 
 if __name__ == "__main__":
