@@ -12,7 +12,7 @@ class MerkleTree:
         if len(self.transactions) % 2 != 0:
             self.transactions.append(self.transactions[-1])
 
-        tree = [hashlib.sha256((t1 + t2).encode()).hexdigest()
+        tree = [hashlib.sha256((t1 + t2)).hexdigest()
                 for t1, t2 in zip(self.transactions[::2], self.transactions[1::2])]
 
         if len(tree) > 1:
@@ -62,6 +62,9 @@ def write_block(sender, receiver, amount, prev_hash=''):
 def main():
     print('!writeblock - adds block')
     print('!validate - to check integrity')
+    print('!getroot - gets root of merkle tree')
+    path = os.curdir + '/blockchain/'
+    files = os.listdir(path)
     while True:
         commands = input()
         try:
@@ -75,6 +78,14 @@ def main():
                         write_block(sender, receiver, amount)
                     elif x == 'validate':
                         validate()
+                    elif x == 'getroot':
+                        transactions = []
+                        for filename in files:
+                            file = open(path + filename, 'rb').read()
+                            transactions.append(file)
+
+                        tree = MerkleTree(transactions)
+                        print(tree.get_root())
         except Exception as e:
             print(e)
 
